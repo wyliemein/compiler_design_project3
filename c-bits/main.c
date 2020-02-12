@@ -4,7 +4,12 @@
 extern int our_code_starts_here() asm("our_code_starts_here");
 
 int print(int val) {
-  printf("Unknown value: %#010x\n", val);
+  if (val == 0xFFFFFFFF)
+    printf("True");
+  else if (val == 0x7FFFFFFF)
+    printf("false");
+  else
+    printf("%d", val >> 1);
   return val;
 }
 
