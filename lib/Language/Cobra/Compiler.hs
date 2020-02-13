@@ -158,8 +158,8 @@ compilePrim2 l env Greater v1 v2 = assertType env v1 TNumber ++ assertType env v
 compilePrim2 l env Equal v1 v2 = assertType env v1 TNumber ++ assertType env v2 TNumber ++
                                   [IMov (Reg EAX) (immArg env v1)
                                    , IXor (Reg EAX) (immArg env v2)
-                                   , IAnd (Reg EAX) (HexConst 0x80000000)
-                                   , IOr (Reg EAX) (HexConst 0x7fffffff)]                            
+                                   , IOr (Reg EAX) (HexConst 0x7fffffff)
+                                   ]                            
 compilePrim2 l env _ _ _ = error "TBD: "
 
 -- | TBD: Implement code for `If` with appropriate type checking

@@ -7,7 +7,7 @@
     {
         "name"   : "subs1",
         "code"   : "file",
-        "result" : { "value": "false" }
+        "result" : { "value": "true" }
     },
     {
         "name"   : "add4",
