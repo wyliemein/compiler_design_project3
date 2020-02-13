@@ -126,8 +126,8 @@ errUnboundVar l x = mkError (printf "Unbound variable %s" x) l
 
 -- | TBD: Implement code for `Prim1` with appropriate type checking
 compilePrim1 :: Tag -> Env -> Prim1 -> IExp -> [Instruction]
-compilePrim1 l env op v | pprint op == "add1" = assertType env v TNumber ++ compileEnv env v ++ [IAdd (Reg EAX) (Const 2)] 
-                        | pprint op == "sub1" = assertType env v TNumber ++ compileEnv env v ++ [ISub (Reg EAX) (Const 2)]
+compilePrim1 l env op v | pprint op == "add1" = assertType env v TNumber ++ compileEnv env v ++ [IAdd (Reg EAX) (HexConst 0x00000002), IJo (DynamicErr ArithOverflow)] 
+                        | pprint op == "sub1" = assertType env v TNumber ++ compileEnv env v ++ [ISub (Reg EAX) (HexConst 0x00000002), IJo (DynamicErr ArithOverflow)]
                         | pprint op == "print" = compileEnv env v ++ [IPush (Reg EAX), ICall (Builtin "print")]
                         | pprint op == "isNum" = assertType env v TNumber --shouldn't error, need to just check type
                         | pprint op == "isBool" = assertType env v TBoolean
@@ -136,15 +136,18 @@ compilePrim1 l env op v | pprint op == "add1" = assertType env v TNumber ++ comp
 compilePrim2 :: Tag -> Env -> Prim2 -> IExp -> IExp -> [Instruction]
 compilePrim2 l env Plus v1 v2 = assertType env v1 TNumber ++ assertType env v2 TNumber ++ 
                                   [IMov (Reg EAX) (immArg env v1)
-                                  , IAdd (Reg EAX) (immArg env v2)]
+                                  , IAdd (Reg EAX) (immArg env v2)
+                                  , IJo (DynamicErr ArithOverflow)]
 compilePrim2 l env Minus v1 v2 = assertType env v1 TNumber ++ assertType env v2 TNumber ++ 
                                   [IMov (Reg EAX) (immArg env v1)
-                                  , ISub (Reg EAX) (immArg env v2)]
+                                  , ISub (Reg EAX) (immArg env v2)
+                                  , IJo (DynamicErr ArithOverflow)]
 compilePrim2 l env Times v1 v2 = assertType env v1 TNumber ++ 
                                   assertType env v2 TNumber ++ 
                                   [IMov (Reg EAX) (immArg env v1)
                                   , IMul (Reg EAX)( immArg env v2)
-                                  , ISar (Reg EAX) (Const 1)]
+                                  , ISar (Reg EAX) (Const 1)
+                                  , IJo (DynamicErr ArithOverflow)]
 compilePrim2 l env Less v1 v2 = assertType env v1 TNumber ++ assertType env v2 TNumber ++
                                    [IMov (Reg EAX) (immArg env v1)
                                    , ISub (Reg EAX) (immArg env v2)

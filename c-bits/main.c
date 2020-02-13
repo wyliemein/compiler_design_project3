@@ -14,7 +14,12 @@ int print(int val) {
 }
 
 int error(int val){
-  fprintf(stderr, "Error: expected a number");
+  if(val == 0)
+    fprintf(stderr, "Error: expected a number");
+  else if(val == 1)
+    fprintf(stderr, "Error: expected a boolean");
+  else if(val == 2)
+    fprintf(stderr, "Error: arithmetic overflow");
   return 0;
 }
 

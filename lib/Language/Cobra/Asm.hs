@@ -33,6 +33,8 @@ postlude = [  ILabel (DynamicErr (TypeError TNumber))
             , ICall (Builtin "error")
             , ILabel (DynamicErr (TypeError TBoolean))
             , ICall (Builtin "error")
+            , ILabel (DynamicErr (ArithOverflow))
+            , ICall (Builtin "error")
             ]
 
 
