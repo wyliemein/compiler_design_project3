@@ -23,12 +23,18 @@ header = unlines
   , "extern print"
   , "global our_code_starts_here"
   , "our_code_starts_here:"
+  , "extern error"
   ]
 
 -- FILL: insert instructions containing labels and code for jumping to and
 -- calling `error` here.
 postlude :: [Instruction]
-postlude = error "TBD:postlude"
+postlude = [  ILabel (DynamicErr (TypeError TNumber))
+            , ICall (Builtin "error")
+            , ILabel (DynamicErr (TypeError TBoolean))
+            , ICall (Builtin "error")
+            ]
+
 
 --------------------------------------------------------------------------------
 instrAsm :: Instruction -> Text

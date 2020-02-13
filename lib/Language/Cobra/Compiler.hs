@@ -58,11 +58,11 @@ funInstrs n instrs = funEntry n ++ instrs ++ funExit
 
 -- | TBD: insert instructions for setting up stack-frame for `n` local vars
 funEntry :: Int -> [Instruction]
-funEntry n  = error "TBD:funEntry"
+funEntry n  = [IPush (Reg EBP), IMov (Reg EBP) (Reg ESP), ISub (Reg ESP) (Const (4 * n))]
 
 -- | TBD: cleaning up stack-frame after function finishes
 funExit :: [Instruction]
-funExit   = error "TBD:funExit"
+funExit   = [IMov (Reg ESP) (Reg EBP), IPop (Reg EBP), IRet]
 
 --------------------------------------------------------------------------------
 -- | @countVars e@ returns the maximum stack-size needed to evaluate e,
@@ -126,11 +126,20 @@ errUnboundVar l x = mkError (printf "Unbound variable %s" x) l
 
 -- | TBD: Implement code for `Prim1` with appropriate type checking
 compilePrim1 :: Tag -> Env -> Prim1 -> IExp -> [Instruction]
-compilePrim1 l env op v = error "TBD:compilePrim1"
+compilePrim1 l env op v | pprint op == "add1" = assertType env v TNumber ++ compileEnv env v ++ [IAdd (Reg EAX) (Const 1)] 
+                        | pprint op == "sub1" = assertType env v TNumber ++ compileEnv env v ++ [IAdd (Reg EAX) (Const 1)]
+                        | pprint op == "print" = compileEnv env v ++ [IPush (Reg EAX), ICall (Builtin "print")]
+                        | pprint op == "isNum" = assertType env v TNumber
+                        | pprint op == "isBool" = assertType env v TBoolean
 
 -- | TBD: Implement code for `Prim2` with appropriate type checking
 compilePrim2 :: Tag -> Env -> Prim2 -> IExp -> IExp -> [Instruction]
-compilePrim2 l env op = error "TBD:compilePrim2"
+compilePrim2 l env Plus v1 v2 = assertType env v1 TNumber ++ assertType env v2 TNumber ++ [IMov (Reg EAX) (immArg env v1), IAdd (Reg EAX) (immArg env v2)]
+compilePrim2 l env Minus v1 v2 = assertType env v1 TNumber ++ assertType env v2 TNumber ++ [IMov (Reg EAX) (immArg env v1), ISub (Reg EAX) (immArg env v2)]
+compilePrim2 l env Times v1 v2 = assertType env v1 TNumber ++ 
+                                  assertType env v2 TNumber ++ 
+                                  [IMov (Reg EAX) (immArg env v1), IMul (Reg EAX)( immArg env v2), ISar (Reg EAX) (Const 1)]
+compilePrim2 l env _ _ _ = error "TBD "
 
 -- | TBD: Implement code for `If` with appropriate type checking
 compileIf :: Tag -> Env -> IExp -> AExp -> AExp -> [Instruction]
@@ -138,6 +147,13 @@ compileIf l env v e1 e2 = error "TBD:compileIf"
 
 stackVar :: Int -> Arg
 stackVar i = RegOffset (-4 * i) EBP
+
+assertType :: Env -> IExp -> Ty -> [Instruction]
+assertType env v ty = [IMov (Reg EAX) (immArg env v)
+                      , IMov (Reg EBX) (Reg EAX)
+                      , IAnd (Reg EBX) (Sized DWordPtr (typeMask ty))
+                      , ICmp (Reg EBX) (Sized DWordPtr (typeTag ty))
+                      , IJne (DynamicErr (TypeError ty))]
 
 --------------------------------------------------------------------------------
 -- | Representing Values

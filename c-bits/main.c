@@ -5,12 +5,17 @@ extern int our_code_starts_here() asm("our_code_starts_here");
 
 int print(int val) {
   if (val == 0xFFFFFFFF)
-    printf("True");
+    printf("true\n");
   else if (val == 0x7FFFFFFF)
-    printf("false");
+    printf("false\n");
   else
-    printf("%d", val >> 1);
+    printf("%d\n", val >> 1);
   return val;
+}
+
+int error(int val){
+  fprintf(stderr, "Error: expected a number");
+  return 0;
 }
 
 int main(int argc, char** argv) {
