@@ -3,5 +3,15 @@
         "name"   : "print4",
         "code"   : "file",
         "result" : { "value": "2\n2\n" }
+    },
+    {
+        "name"   : "subs1",
+        "code"   : "file",
+        "result" : { "value": "false" }
+    },
+    {
+        "name"   : "add4",
+        "code"   : "file",
+        "result" : { "value": "4" }
     }
 ]
