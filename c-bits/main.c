@@ -13,14 +13,14 @@ int print(int val) {
   return val;
 }
 
-int error(int val){
-  if(val == 0)
-    fprintf(stderr, "Error: expected a number");
-  else if(val == 1)
-    fprintf(stderr, "Error: expected a boolean");
-  else if(val == 2)
-    fprintf(stderr, "Error: arithmetic overflow");
-  return 0;
+int error(int code, int v){
+  if(code == 0)
+    fprintf(stderr, "Error: expected a number\n");
+  else if(code == 1)
+    fprintf(stderr, "Error: expected a boolean\n");
+  else if(code == 2)
+    fprintf(stderr, "Error: arithmetic overflow\n");
+  exit(1);
 }
 
 int main(int argc, char** argv) {

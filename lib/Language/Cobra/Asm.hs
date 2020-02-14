@@ -30,10 +30,16 @@ header = unlines
 -- calling `error` here.
 postlude :: [Instruction]
 postlude = [  ILabel (DynamicErr (TypeError TNumber))
+            , IPush (Reg EAX)
+            , IPush (Const 0)
             , ICall (Builtin "error")
             , ILabel (DynamicErr (TypeError TBoolean))
+            , IPush (Reg EAX)
+            , IPush (Const 1)
             , ICall (Builtin "error")
             , ILabel (DynamicErr (ArithOverflow))
+            , IPush (Reg EAX)
+            , IPush (Const 2)
             , ICall (Builtin "error")
             ]
 

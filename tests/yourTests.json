@@ -7,7 +7,7 @@
     {
         "name"   : "subs1",
         "code"   : "file",
-        "result" : { "value": "true" }
+        "result" : { "value": "Error: expected a number" }
     },
     {
         "name"   : "add4",
