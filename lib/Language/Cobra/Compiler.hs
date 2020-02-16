@@ -129,8 +129,18 @@ compilePrim1 :: Tag -> Env -> Prim1 -> IExp -> [Instruction]
 compilePrim1 l env op v | pprint op == "add1" = assertType env v TNumber ++ compileEnv env v ++ [IAdd (Reg EAX) (HexConst 0x00000002), IJo (DynamicErr ArithOverflow)] 
                         | pprint op == "sub1" = assertType env v TNumber ++ compileEnv env v ++ [ISub (Reg EAX) (HexConst 0x00000002), IJo (DynamicErr ArithOverflow)]
                         | pprint op == "print" = compileEnv env v ++ [IPush (Reg EAX), ICall (Builtin "print")]
-                        | pprint op == "isNum" = assertType env v TNumber --shouldn't error, need to just check type
-                        | pprint op == "isBool" = assertType env v TBoolean
+                        | pprint op == "isNum" = [IMov (Reg EAX) (immArg env v)
+                        , IMov (Reg EBX) (Reg EAX)
+                        , IXor (Reg EBX) (Sized DWordPtr (HexConst 0x00000001))
+                        , IShl (Reg EBX) (Const 31)
+                        , IOr (Reg EBX) (repr False)
+                        , IMov (Reg EAX) (Reg EBX)]
+                        | pprint op == "isBool" = [IMov (Reg EAX) (immArg env v)
+                        , IMov (Reg EBX) (Reg EAX)
+                        , IAnd (Reg EBX) (Sized DWordPtr (HexConst 0x00000001))
+                        , IShl (Reg EBX) (Const 31)
+                        , IOr (Reg EBX) (repr False)
+                        , IMov (Reg EAX) (Reg EBX)]
 
 -- | TBD: Implement code for `Prim2` with appropriate type checking
 compilePrim2 :: Tag -> Env -> Prim2 -> IExp -> IExp -> [Instruction]
@@ -159,12 +169,8 @@ compilePrim2 l env Greater v1 v2 = assertType env v1 TNumber ++ assertType env v
                                    , ISub (Reg EAX) (immArg env v1)
                                    , IAnd (Reg EAX) (HexConst 0x80000000)
                                    , IOr (Reg EAX) (HexConst 0x7fffffff)]     
-compilePrim2 l env Equal v1 v2 = assertType env v1 TNumber ++ assertType env v2 TNumber ++
-                                  [IMov (Reg EAX) (immArg env v1)
-                                   , IXor (Reg EAX) (immArg env v2)
-                                   , IOr (Reg EAX) (HexConst 0x7fffffff)
-                                   ]                            
-compilePrim2 l env _ _ _ = error "TBD: "
+compilePrim2 l env Equal v1 v2 = assertType env v1 TNumber ++ assertType env v2 TNumber                  
+compilePrim2 l env _ _ _ = error "TBD: " 
 
 -- | TBD: Implement code for `If` with appropriate type checking
 compileIf :: Tag -> Env -> IExp -> AExp -> AExp -> [Instruction]
@@ -179,6 +185,7 @@ assertType env v ty = [IMov (Reg EAX) (immArg env v)
                       , IAnd (Reg EBX) (Sized DWordPtr (typeMask ty))
                       , ICmp (Reg EBX) (Sized DWordPtr (typeTag ty))
                       , IJne (DynamicErr (TypeError ty))]
+
 --------------------------------------------------------------------------------
 -- | Representing Values
 --------------------------------------------------------------------------------

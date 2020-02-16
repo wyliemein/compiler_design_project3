@@ -13,7 +13,7 @@ int print(int val) {
   return val;
 }
 
-int error(int code, int v){
+int error(int code){
   if(code == 0)
     fprintf(stderr, "Error: expected a number\n");
   else if(code == 1)
