@@ -7,7 +7,7 @@
     {
         "name"   : "subs1",
         "code"   : "file",
-        "result" : { "value": "Error: expected a number" }
+        "result" : { "value": "Error: arithmetic overflow" }
     },
     {
         "name"   : "add4",

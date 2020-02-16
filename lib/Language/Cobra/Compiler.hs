@@ -179,7 +179,6 @@ assertType env v ty = [IMov (Reg EAX) (immArg env v)
                       , IAnd (Reg EBX) (Sized DWordPtr (typeMask ty))
                       , ICmp (Reg EBX) (Sized DWordPtr (typeTag ty))
                       , IJne (DynamicErr (TypeError ty))]
-
 --------------------------------------------------------------------------------
 -- | Representing Values
 --------------------------------------------------------------------------------
