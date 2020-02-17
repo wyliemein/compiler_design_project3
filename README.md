@@ -1,4 +1,4 @@
-For this project I worked with Rob Crosby, we couldn't make a shared repo so our code is being submitted seperately. 
+For this project I worked with Rob Crosby (rncrosby), we couldn't make a shared repo so our code is being submitted seperately. 
 
 # Cobra
 
