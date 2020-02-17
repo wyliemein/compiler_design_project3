@@ -19,4 +19,10 @@
         "code"   : "file",
         "result" : { "value": "false" }
     }
+    ,
+    {
+        "name"   : "comp1",
+        "code"   : "file",
+        "result" : { "value": "Type Error" }
+    }
 ]
