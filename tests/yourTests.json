@@ -16,7 +16,7 @@
     },
     {
         "name"   : "add5",
-        "code"   : "isNum(2)",
-        "result" : { "value": "4" }
+        "code"   : "file",
+        "result" : { "value": "false" }
     }
 ]

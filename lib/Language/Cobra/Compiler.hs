@@ -169,18 +169,34 @@ compilePrim2 l env Greater v1 v2 = assertType env v1 TNumber ++ assertType env v
                                    , ISub (Reg EAX) (immArg env v1)
                                    , IAnd (Reg EAX) (HexConst 0x80000000)
                                    , IOr (Reg EAX) (HexConst 0x7fffffff)]     
-compilePrim2 l env Equal v1 v2 = assertType env v1 TNumber ++ assertType env v2 TNumber                  
-compilePrim2 l env _ _ _ = error "TBD: " 
+compilePrim2 l env Equal v1 v2 = assertType env v1 TNumber ++ assertType env v2 TNumber ++
+                                  [ IMov (Reg EAX) (immArg env v1)
+                                  , IXor (Reg EAX) (immArg env v2)
+                                  , ICmp (Reg EAX) (typeTag TNumber)
+                                  , IJe (BranchTrue (snd l))
+                                  , IMov (Reg EAX) (repr False)
+                                  , IJmp (BranchDone (snd l))
+                                  , ILabel (BranchTrue (snd l))
+                                  , IMov (Reg EAX) (repr True)
+                                  , ILabel (BranchDone (snd l))]
 
 -- | TBD: Implement code for `If` with appropriate type checking
 compileIf :: Tag -> Env -> IExp -> AExp -> AExp -> [Instruction]
-compileIf l env v e1 e2 = error "TBD:compileIf"
+compileIf l env v e1 e2 = assertType env v TBoolean ++ 
+                          [ICmp (Reg EAX) (repr True)
+                          , IJe (BranchTrue (snd l))] ++ 
+                          compileEnv env e2 ++ 
+                          [ IJmp (BranchDone (snd l)) 
+                          , ILabel (BranchTrue (snd l))] ++ 
+                          compileEnv env e1 ++ 
+                          [ILabel (BranchDone (snd l))]
+
 
 stackVar :: Int -> Arg
 stackVar i = RegOffset (-4 * i) EBP
 
 assertType :: Env -> IExp -> Ty -> [Instruction]
-assertType env v ty = [IMov (Reg EAX) (immArg env v)
+assertType env v ty = compileEnv env v ++ [IMov (Reg EAX) (immArg env v)
                       , IMov (Reg EBX) (Reg EAX)
                       , IAnd (Reg EBX) (Sized DWordPtr (typeMask ty))
                       , ICmp (Reg EBX) (Sized DWordPtr (typeTag ty))

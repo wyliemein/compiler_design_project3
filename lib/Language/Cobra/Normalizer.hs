@@ -35,7 +35,7 @@ anf i (Let x e b l)     = (i'', Let x e' b' l)
     (i', e') = anf i e
     (i'', b') = anf i' b
 
-anf i (Prim1 o e l)     = (i', stitch bs  (Prim1 o ae l))
+anf i (Prim1 o e l)     = (i', stitch (reverse bs) (Prim1 o ae l))
   where
     (i', bs, ae)        = imm i e
 
@@ -44,9 +44,9 @@ anf i (Prim2 o e1 e2 l) = (i'', stitch (reverse (b1s ++ b2s)) (Prim2 o e1' e2' l
     (i', b1s, e1')      = imm i e1
     (i'', b2s, e2')     = imm i' e2
 
-anf i (If c e1 e2 l)    = (i''', stitch bs  (If c' e1' e2' l))
+anf i (If c e1 e2 l)    = (i''', stitch (reverse bs)  (If c' e1' e2' l))
   where
-    (i'  , bs, c')      = imm i   c
+    (i'  , bs, c')      = imm i c
     (i'' ,     e1') = anf i'  e1
     (i''',     e2') = anf i'' e2
 
@@ -91,11 +91,7 @@ imm i (Id x l)          = (i, [], Id x l)
 imm i (Boolean b  l)    = (i, [], Boolean b l)
 
 
-imm i (Prim1 o e1 l)    = (i'', bs, mkId v l)
-  where
-    (i' , b1s, v1)      = imm i e1
-    (i'', v)            = fresh l i'
-    bs                  = (v, (Prim1 o v1 l, l)) : b1s
+imm i e@(Prim1 _ _ l)   = immExp i e l
 
 imm i (Prim2 o e1 e2 l) = (i''', bs, mkId v l)
   where
