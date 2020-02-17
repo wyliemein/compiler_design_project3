@@ -1,3 +1,5 @@
+For this project I worked with Rob Crosby, we couldn't make a shared repo so our code is being submitted seperately. 
+
 # Cobra
 
 ![A cobra](https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Indian_Cobra.JPG/1920px-Indian_Cobra.JPG)
