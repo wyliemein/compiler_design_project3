@@ -23,6 +23,26 @@
     {
         "name"   : "comp1",
         "code"   : "file",
+        "result" : { "value": "0\n-200\n-200"}
+    },
+    {
+        "name"   : "testtype",
+        "code"   : "x = true + 1",
         "result" : { "value": "Type Error" }
+    },
+    {
+        "name"   : "test3",
+        "code"   : "sub1(0xFFFFFFFF)",
+        "result" : { "value": "Error: expected a number" }
+    },
+    {
+        "name"   : "test4",
+        "code"   : "if(3): true else: false",
+        "result" : { "value": "Error: expected a number" }
+    },
+    {
+        "name"   : "test5",
+        "code"   : "isNum(3==3)",
+        "result" : { "value": "false" }
     }
 ]
